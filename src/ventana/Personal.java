@@ -1,15 +1,20 @@
 package ventana;
 
+import java.sql.*;
+import javax.swing.JOptionPane;
+
 public class Personal extends javax.swing.JFrame {
     
     // variables para conexion a la db
     public String driver = "com.mysql.cj.jdbc.Driver"; // se optiene con la libreria mysql-connector
     public String username = "root"; // normalmente es root
-    public String password = ""; // clave configurada en su db
+    public String password = ""; // clave configurada en su db (ingresela si tiene)
     public String hostname = "localhost"; // normalmente es localhost o 127.0.0.1
     public String port = "3306"; // normalmente es 3306
     public String database = "crud_escuela"; // Esta es la db configurada para este CRUD
     public String url = "jdbc:mysql://"+ hostname +":"+ port +"/"+database;
+    
+    Connection conn;
 
     public Personal() {
         initComponents();
@@ -176,27 +181,39 @@ public class Personal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
     private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
-        // TODO add your handling code here:
+        conn = getConnection();        
     }//GEN-LAST:event_btnBorrarActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
-        // TODO add your handling code here:
+        conn = getConnection();        
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
-        // TODO add your handling code here:
+        conn = getConnection();
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-
+        conn = getConnection();
     }//GEN-LAST:event_btnBuscarActionPerformed
 
+    // metodo para la conexion a la db
+    public Connection getConnection() {
+        Connection conexion = null;
+        try {
+            Class.forName(driver);
+            conexion = DriverManager.getConnection(url, username, password);
+            JOptionPane.showMessageDialog(null, "Conexión exitosa");
+        } catch (ClassNotFoundException | SQLException ex) {
+            System.err.println("Error en la conexión, " + ex);
+        }
+        return conexion;
+    }
+    
     public static void main(String args[]) {
-
         java.awt.EventQueue.invokeLater(() -> {
             new Personal().setVisible(true);
         });
