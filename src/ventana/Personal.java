@@ -1,6 +1,15 @@
 package ventana;
 
 public class Personal extends javax.swing.JFrame {
+    
+    // variables para conexion a la db
+    public String driver = "com.mysql.cj.jdbc.Driver"; // se optiene con la libreria mysql-connector
+    public String username = "root"; // normalmente es root
+    public String password = ""; // clave configurada en su db
+    public String hostname = "localhost"; // normalmente es localhost o 127.0.0.1
+    public String port = "3306"; // normalmente es 3306
+    public String database = "crud_escuela"; // Esta es la db configurada para este CRUD
+    public String url = "jdbc:mysql://"+ hostname +":"+ port +"/"+database;
 
     public Personal() {
         initComponents();
