@@ -198,7 +198,7 @@ public class Personal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
-
+        limpiar();
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
     private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
@@ -260,6 +260,18 @@ public class Personal extends javax.swing.JFrame {
         return conexion;
     }
 
+    public void limpiar() {
+        cajaBuscar.setText("");
+        cajaId.setText("");
+        cajaIdentificacion.setText("");
+        cajaNombre.setText("");
+        cajaEmail.setText("");
+        cajaDireccion.setText("");
+        cajaCelular.setText("");
+        cajaIngreso.setText("");
+        comboGenero.setSelectedItem("");
+    }
+    
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> {
             new Personal().setVisible(true);
