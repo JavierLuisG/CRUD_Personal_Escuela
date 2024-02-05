@@ -206,6 +206,18 @@ public class Personal extends javax.swing.JFrame {
 
     private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
         conn = getConnection();
+        String query = "DELETE FROM personal WHERE idPersonal = ?";
+        try {
+            preparedStatement = conn.prepareStatement(query);
+            id = cajaId.getText();
+            preparedStatement.setString(1, id);
+            preparedStatement.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Registro eliminado");
+            limpiar();
+            conn.close();
+        } catch (SQLException ex) {
+            System.err.println("Error al eliminar, " + ex);
+        }        
     }//GEN-LAST:event_btnBorrarActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
