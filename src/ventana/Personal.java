@@ -18,7 +18,8 @@ public class Personal extends javax.swing.JFrame {
     Connection conn;
     PreparedStatement preparedStatement;
     ResultSet rs;
-
+    
+    String id;
     String buscar_identificacion;
     String identificacion;
     String nombre;
@@ -209,6 +210,34 @@ public class Personal extends javax.swing.JFrame {
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
         conn = getConnection();
+        String query = "UPDATE personal SET numero_identificacion = ?,nombre = ?,email = ?,direccion = ?,"
+                + "celular = ?,fecha_ingreso = ?,genero = ? WHERE idPersonal = ?";
+        try {
+            preparedStatement = conn.prepareStatement(query);
+            // obtener los valores de las cajas
+            id = cajaId.getText();
+            identificacion = String.valueOf(cajaIdentificacion.getText());
+            nombre = String.valueOf(cajaNombre.getText());
+            email = String.valueOf(cajaEmail.getText());
+            direccion = String.valueOf(cajaDireccion.getText());
+            celular = String.valueOf(cajaCelular.getText());
+            fecha_ingreso = String.valueOf(cajaIngreso.getText());
+            genero = String.valueOf(comboGenero.getSelectedItem());
+            // pasar los valores al query correspondiente
+            preparedStatement.setString(1, identificacion);
+            preparedStatement.setString(2, nombre);
+            preparedStatement.setString(3, email);
+            preparedStatement.setString(4, direccion);
+            preparedStatement.setString(5, celular);
+            preparedStatement.setString(6, fecha_ingreso);
+            preparedStatement.setString(7, genero);
+            preparedStatement.setString(8, id);
+            preparedStatement.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Actualización exitosa");
+            conn.close();            
+        } catch (SQLException ex) {
+            System.err.println("Error en actualización, " + ex);
+        }
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
@@ -217,7 +246,6 @@ public class Personal extends javax.swing.JFrame {
                 + " value (?,?,?,?,?,?,?)";
         try {
             preparedStatement = conn.prepareStatement(query);
-//            rs = preparedStatement.executeQuery();
             // obtener los valores ingresados por el usuario en cada caja de texto
             identificacion = cajaIdentificacion.getText();
             nombre = cajaNombre.getText();
@@ -261,6 +289,8 @@ public class Personal extends javax.swing.JFrame {
                 celular = String.valueOf(rs.getString("celular"));
                 fecha_ingreso = String.valueOf(rs.getDate("fecha_ingreso"));
                 genero = rs.getString("genero");
+                // obtener el valor del id para generar actualización
+                cajaId.setText(String.valueOf(rs.getInt("idPersonal")));
                 // teniendo el valor en las variables ahora los envio a las cajas
                 cajaIdentificacion.setText(identificacion);
                 cajaNombre.setText(nombre);
