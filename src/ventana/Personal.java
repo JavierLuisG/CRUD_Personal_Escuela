@@ -1,10 +1,11 @@
 package ventana;
 
 import java.sql.*;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 public class Personal extends javax.swing.JFrame {
-    
+
     // variables para conexion a la db
     public String driver = "com.mysql.cj.jdbc.Driver"; // se optiene con la libreria mysql-connector
     public String username = "root"; // normalmente es root
@@ -12,9 +13,23 @@ public class Personal extends javax.swing.JFrame {
     public String hostname = "localhost"; // normalmente es localhost o 127.0.0.1
     public String port = "3306"; // normalmente es 3306
     public String database = "crud_escuela"; // Esta es la db configurada para este CRUD
-    public String url = "jdbc:mysql://"+ hostname +":"+ port +"/"+database;
-    
+    public String url = "jdbc:mysql://" + hostname + ":" + port + "/" + database;
+
     Connection conn;
+    PreparedStatement preparedStatement;
+    ResultSet rs;
+
+    String buscar_identificacion;
+    String identificacion;
+    String nombre;
+    String email;
+    String direccion;
+    String celular;
+    String fecha_ingreso;
+    String genero;
+    // generar los valores del JComboBox
+    String[] generoArray = {"", "Masculino", "Femenino"};
+    DefaultComboBoxModel model = new DefaultComboBoxModel(generoArray);
 
     public Personal() {
         initComponents();
@@ -24,6 +39,8 @@ public class Personal extends javax.swing.JFrame {
         setResizable(false);
         // No necesitamos la visibilidad de la cajaId
         cajaId.setVisible(false);
+        // titulo de la ventana
+        setTitle("Peronal de la escuela");
     }
 
     @SuppressWarnings("unchecked")
@@ -127,7 +144,7 @@ public class Personal extends javax.swing.JFrame {
         jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 310, 68, 24));
 
         comboGenero.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
-        comboGenero.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Masculino", "Femenino" }));
+        comboGenero.setModel(model);
         jPanel1.add(comboGenero, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 310, 180, -1));
 
         btnRegistrar.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
@@ -181,15 +198,15 @@ public class Personal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
-        
+
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
     private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
-        conn = getConnection();        
+        conn = getConnection();
     }//GEN-LAST:event_btnBorrarActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
-        conn = getConnection();        
+        conn = getConnection();
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
@@ -197,7 +214,38 @@ public class Personal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        String query = "SELECT * FROM personal where numero_identificacion = ?";
         conn = getConnection();
+        try {
+            // obtener el valor del No identificacion ingresado por el usuario 
+            buscar_identificacion = cajaBuscar.getText().trim(); // (.trim() quita los espacios antes y despues)
+            preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setString(1, buscar_identificacion); // pasa el valor al parametro ? de la query
+            rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                // obtener los valores que se encuentran en la db
+                identificacion = String.valueOf(rs.getString("numero_identificacion"));
+                nombre = String.valueOf(rs.getString("nombre"));
+                email = String.valueOf(rs.getString("email"));
+                direccion = String.valueOf(rs.getString("direccion"));
+                celular = String.valueOf(rs.getString("celular"));
+                fecha_ingreso = String.valueOf(rs.getDate("fecha_ingreso"));
+                genero = rs.getString("genero");
+                // teniendo el valor en las variables ahora los envio a las cajas
+                cajaIdentificacion.setText(identificacion);
+                cajaNombre.setText(nombre);
+                cajaEmail.setText(email);
+                cajaDireccion.setText(direccion);
+                cajaCelular.setText(celular);
+                cajaIngreso.setText(fecha_ingreso);
+                comboGenero.setSelectedItem(genero); // el valor en la db debe ser igual que en el comboGenero (tener en cuenta las mayusculas y minusculas
+                JOptionPane.showMessageDialog(null, "Consulta exitosa");
+            }
+            conn.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al realizar la consulta");
+            System.err.println("Error al realizar consulta, " + ex);
+        }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     // metodo para la conexion a la db
@@ -206,13 +254,12 @@ public class Personal extends javax.swing.JFrame {
         try {
             Class.forName(driver);
             conexion = DriverManager.getConnection(url, username, password);
-            JOptionPane.showMessageDialog(null, "Conexión exitosa");
         } catch (ClassNotFoundException | SQLException ex) {
             System.err.println("Error en la conexión, " + ex);
         }
         return conexion;
     }
-    
+
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> {
             new Personal().setVisible(true);
