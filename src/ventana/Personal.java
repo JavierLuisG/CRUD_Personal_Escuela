@@ -40,7 +40,7 @@ public class Personal extends javax.swing.JFrame {
         // No necesitamos la visibilidad de la cajaId
         cajaId.setVisible(false);
         // titulo de la ventana
-        setTitle("Peronal de la escuela");
+        setTitle("Personal de la escuela");
     }
 
     @SuppressWarnings("unchecked")
@@ -154,7 +154,7 @@ public class Personal extends javax.swing.JFrame {
                 btnRegistrarActionPerformed(evt);
             }
         });
-        jPanel1.add(btnRegistrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 390, 100, 30));
+        jPanel1.add(btnRegistrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 400, 100, 30));
 
         btnActualizar.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         btnActualizar.setText("Actualizar");
@@ -163,7 +163,7 @@ public class Personal extends javax.swing.JFrame {
                 btnActualizarActionPerformed(evt);
             }
         });
-        jPanel1.add(btnActualizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 390, 100, 30));
+        jPanel1.add(btnActualizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 400, 100, 30));
 
         btnBorrar.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         btnBorrar.setText("Borrar");
@@ -172,7 +172,7 @@ public class Personal extends javax.swing.JFrame {
                 btnBorrarActionPerformed(evt);
             }
         });
-        jPanel1.add(btnBorrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 390, 100, 30));
+        jPanel1.add(btnBorrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 400, 100, 30));
 
         btnLimpiar.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         btnLimpiar.setText("Limpiar");
@@ -181,7 +181,7 @@ public class Personal extends javax.swing.JFrame {
                 btnLimpiarActionPerformed(evt);
             }
         });
-        jPanel1.add(btnLimpiar, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 390, 100, 30));
+        jPanel1.add(btnLimpiar, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 400, 100, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -191,7 +191,9 @@ public class Personal extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 442, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 442, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(8, Short.MAX_VALUE))
         );
 
         pack();
@@ -211,11 +213,39 @@ public class Personal extends javax.swing.JFrame {
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
         conn = getConnection();
+        String query = "INSERT INTO personal (numero_identificacion,nombre,email,direccion,celular,fecha_ingreso,genero)"
+                + " value (?,?,?,?,?,?,?)";
+        try {
+            preparedStatement = conn.prepareStatement(query);
+//            rs = preparedStatement.executeQuery();
+            // obtener los valores ingresados por el usuario en cada caja de texto
+            identificacion = cajaIdentificacion.getText();
+            nombre = cajaNombre.getText();
+            email = cajaEmail.getText();
+            direccion = cajaDireccion.getText();
+            celular = cajaCelular.getText();
+            fecha_ingreso = cajaIngreso.getText();
+            genero = String.valueOf(comboGenero.getSelectedItem());
+            // mandar los valores a la db
+            preparedStatement.setString(1, identificacion);
+            preparedStatement.setString(2, nombre);
+            preparedStatement.setString(3, email);
+            preparedStatement.setString(4, direccion);
+            preparedStatement.setString(5, celular);
+            preparedStatement.setString(6, fecha_ingreso);
+            preparedStatement.setString(7, genero);
+            // para que se ejecute la modificación
+            preparedStatement.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Registro exitoso");
+            conn.close();
+        } catch (SQLException ex) {
+            System.err.println("Error en registrar, " + ex);
+        }
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        String query = "SELECT * FROM personal where numero_identificacion = ?";
         conn = getConnection();
+        String query = "SELECT * FROM personal where numero_identificacion = ?";
         try {
             // obtener el valor del No identificacion ingresado por el usuario 
             buscar_identificacion = cajaBuscar.getText().trim(); // (.trim() quita los espacios antes y despues)
@@ -271,7 +301,7 @@ public class Personal extends javax.swing.JFrame {
         cajaIngreso.setText("");
         comboGenero.setSelectedItem("");
     }
-    
+
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> {
             new Personal().setVisible(true);
