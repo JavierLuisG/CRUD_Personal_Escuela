@@ -1,6 +1,8 @@
 package ventana;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
@@ -241,7 +243,8 @@ public class Personal extends javax.swing.JFrame {
             preparedStatement.setString(3, email);
             preparedStatement.setString(4, direccion);
             preparedStatement.setString(5, celular);
-            preparedStatement.setString(6, fecha_ingreso);
+            // @validacionIngresoFecha si el usuario no ingresa una fecha, por Default se pondra la fecha actual
+            preparedStatement.setString(6, validacionIngresoFecha(fecha_ingreso));
             preparedStatement.setString(7, genero);
             preparedStatement.setString(8, id);
             preparedStatement.executeUpdate();
@@ -272,7 +275,8 @@ public class Personal extends javax.swing.JFrame {
             preparedStatement.setString(3, email);
             preparedStatement.setString(4, direccion);
             preparedStatement.setString(5, celular);
-            preparedStatement.setString(6, fecha_ingreso);
+            // @validacionIngresoFecha si el usuario no ingresa una fecha, por Default se pondra la fecha actual
+            preparedStatement.setString(6, validacionIngresoFecha(fecha_ingreso));
             preparedStatement.setString(7, genero);
             // para que se ejecute la modificación
             preparedStatement.executeUpdate();
@@ -354,6 +358,22 @@ public class Personal extends javax.swing.JFrame {
         cajaCelular.setText("");
         cajaIngreso.setText("");
         comboGenero.setSelectedItem("");
+    }
+    
+    private static String validacionIngresoFecha(String fecha_ingreso) {
+        // si el usuario no ingresa una fecha, por Default se pondra la fecha actual
+        if (fecha_ingreso.isEmpty()) {
+            return obtenerFechaActual();
+        } else {
+            return fecha_ingreso;
+        }
+    }
+    
+    private static String obtenerFechaActual() {
+        // Método para obtener la fecha actual en formato "yyyy-MM-dd"
+        LocalDate fechaActual = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return fechaActual.format(formatter);
     }
 
     public static void main(String args[]) {
