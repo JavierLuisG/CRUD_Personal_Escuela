@@ -21,7 +21,7 @@ public class Personal extends javax.swing.JFrame {
     Connection conn;
     PreparedStatement preparedStatement;
     ResultSet rs;
-    
+
     String id;
     String buscar_identificacion;
     String identificacion;
@@ -44,7 +44,7 @@ public class Personal extends javax.swing.JFrame {
         // No necesitamos la visibilidad de la cajaId
         cajaId.setVisible(false);
         // titulo de la ventana
-        setTitle("Personal de la escuela");
+        setTitle("Registro del personal de la escuela");
     }
 
     @SuppressWarnings("unchecked")
@@ -90,7 +90,7 @@ public class Personal extends javax.swing.JFrame {
 
         jLabel8.setForeground(new java.awt.Color(153, 153, 153));
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel8.setText("Ingrese No. Identificación");
+        jLabel8.setText("Ingrese N° Identificación");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 15, 146, -1));
 
         cajaBuscar.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
@@ -238,19 +238,29 @@ public class Personal extends javax.swing.JFrame {
             celular = String.valueOf(cajaCelular.getText().trim());
             fecha_ingreso = String.valueOf(cajaIngreso.getText().trim());
             genero = String.valueOf(comboGenero.getSelectedItem());
-            // pasar los valores al query correspondiente
-            preparedStatement.setString(1, identificacion);
-            preparedStatement.setString(2, nombre);
-            preparedStatement.setString(3, email);
-            preparedStatement.setString(4, direccion);
-            preparedStatement.setString(5, celular);
-            // @validacionIngresoFecha si el usuario no ingresa una fecha, por Default se pondra la fecha actual
-            preparedStatement.setString(6, validacionIngresoFecha(fecha_ingreso));
-            preparedStatement.setString(7, genero);
-            preparedStatement.setString(8, id);
-            preparedStatement.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Actualización exitosa");
+            // identificar si las variables están vacias para no enviar datos vacios a la db
+            if (!identificacion.isEmpty() && !nombre.isEmpty() && !email.isEmpty()
+                    && !direccion.isEmpty() && !celular.isEmpty() && !genero.isEmpty()) {
+                // pasar los valores al query correspondiente
+                preparedStatement.setString(1, identificacion);
+                preparedStatement.setString(2, nombre);
+                preparedStatement.setString(3, email);
+                preparedStatement.setString(4, direccion);
+                preparedStatement.setString(5, celular);
+                // @validacionIngresoFecha si el usuario no ingresa una fecha, por Default se pondra la fecha actual
+                preparedStatement.setString(6, validacionIngresoFecha(fecha_ingreso));
+                preparedStatement.setString(7, genero);
+                preparedStatement.setString(8, id);
+                preparedStatement.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Actualización exitosa");
+            } else {
+                JOptionPane.showMessageDialog(null, "No pueden haber campos vacíos");
+            }
             conn.close();
+        } catch (MysqlDataTruncation ex) { // si excede o hay errores en los campos solicitados
+            JOptionPane.showMessageDialog(null, "Ingrese correctamente los valores solicitados");
+        } catch (SQLIntegrityConstraintViolationException ex) {
+            JOptionPane.showMessageDialog(null, "Realice consulta del registro para poder actualizar los datos");
         } catch (SQLException ex) {
             System.err.println("Error en actualización, " + ex);
         }
@@ -270,21 +280,27 @@ public class Personal extends javax.swing.JFrame {
             celular = cajaCelular.getText().trim();
             fecha_ingreso = cajaIngreso.getText().trim();
             genero = String.valueOf(comboGenero.getSelectedItem());
-            // mandar los valores a la db
-            preparedStatement.setString(1, identificacion);
-            preparedStatement.setString(2, nombre);
-            preparedStatement.setString(3, email);
-            preparedStatement.setString(4, direccion);
-            preparedStatement.setString(5, celular);
-            // @validacionIngresoFecha si el usuario no ingresa una fecha, por Default se pondra la fecha actual
-            preparedStatement.setString(6, validacionIngresoFecha(fecha_ingreso));
-            preparedStatement.setString(7, genero);
-            // para que se ejecute la modificación
-            preparedStatement.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Registro exitoso");
-            conn.close();            
-        } catch (SQLIntegrityConstraintViolationException ex) { // No. Identificación ya registrado
-            JOptionPane.showMessageDialog(null, "No Identificación ya registrado");
+            // identificar si las variables están vacias para no enviar datos vacios a ls db
+            if (!identificacion.isEmpty() && !nombre.isEmpty() && !email.isEmpty()
+                    && !direccion.isEmpty() && !celular.isEmpty() && !genero.isEmpty()) {
+                // mandar los valores a la db
+                preparedStatement.setString(1, identificacion);
+                preparedStatement.setString(2, nombre);
+                preparedStatement.setString(3, email);
+                preparedStatement.setString(4, direccion);
+                preparedStatement.setString(5, celular);
+                // @validacionIngresoFecha si el usuario no ingresa una fecha, por Default se pondra la fecha actual
+                preparedStatement.setString(6, validacionIngresoFecha(fecha_ingreso));
+                preparedStatement.setString(7, genero);
+                // para que se ejecute la modificación
+                preparedStatement.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Registro exitoso");
+            } else {
+                JOptionPane.showMessageDialog(null, "No pueden haber campos vacíos");
+            }
+            conn.close();
+        } catch (SQLIntegrityConstraintViolationException ex) { 
+            JOptionPane.showMessageDialog(null, "N° Identificación ya registrado");
         } catch (MysqlDataTruncation ex) { // si excede o hay errores en los campos solicitados
             JOptionPane.showMessageDialog(null, "Ingrese correctamente los valores solicitados");
         } catch (SQLException ex) {
@@ -325,7 +341,7 @@ public class Personal extends javax.swing.JFrame {
                     comboGenero.setSelectedItem(genero); // el valor en la db debe ser igual que en el comboGenero (tener en cuenta las mayusculas y minusculas
                     JOptionPane.showMessageDialog(null, "Consulta exitosa");
                 } else {
-                    JOptionPane.showMessageDialog(null, "No. Identificación no registrado");
+                    JOptionPane.showMessageDialog(null, "N° Identificación no registrado");
                     // si no está registrado el valor ingresado pasa a la cajaIdentificacion para que pueda realizar el registro
                     limpiar();
                     cajaIdentificacion.setText(buscar_identificacion);
@@ -336,7 +352,7 @@ public class Personal extends javax.swing.JFrame {
                 System.err.println("Error al realizar consulta, " + ex);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Ingresar No. Identificación para realizar consulta");
+            JOptionPane.showMessageDialog(null, "Ingresar N° Identificación para realizar consulta");
             limpiar();
         }
     }//GEN-LAST:event_btnBuscarActionPerformed
