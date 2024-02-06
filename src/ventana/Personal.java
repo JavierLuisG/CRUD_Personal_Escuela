@@ -286,37 +286,49 @@ public class Personal extends javax.swing.JFrame {
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         conn = getConnection();
         String query = "SELECT * FROM personal where numero_identificacion = ?";
-        try {
-            // obtener el valor del No identificacion ingresado por el usuario 
-            buscar_identificacion = cajaBuscar.getText().trim(); // (.trim() quita los espacios antes y despues)
-            preparedStatement = conn.prepareStatement(query);
-            preparedStatement.setString(1, buscar_identificacion); // pasa el valor al parametro ? de la query
-            rs = preparedStatement.executeQuery();
-            while (rs.next()) {
-                // obtener los valores que se encuentran en la db
-                identificacion = String.valueOf(rs.getString("numero_identificacion"));
-                nombre = String.valueOf(rs.getString("nombre"));
-                email = String.valueOf(rs.getString("email"));
-                direccion = String.valueOf(rs.getString("direccion"));
-                celular = String.valueOf(rs.getString("celular"));
-                fecha_ingreso = String.valueOf(rs.getDate("fecha_ingreso"));
-                genero = rs.getString("genero");
-                // obtener el valor del id para generar actualización
-                cajaId.setText(String.valueOf(rs.getInt("idPersonal")));
-                // teniendo el valor en las variables ahora los envio a las cajas
-                cajaIdentificacion.setText(identificacion);
-                cajaNombre.setText(nombre);
-                cajaEmail.setText(email);
-                cajaDireccion.setText(direccion);
-                cajaCelular.setText(celular);
-                cajaIngreso.setText(fecha_ingreso);
-                comboGenero.setSelectedItem(genero); // el valor en la db debe ser igual que en el comboGenero (tener en cuenta las mayusculas y minusculas
-                JOptionPane.showMessageDialog(null, "Consulta exitosa");
+        // se verifica si se ha ingresado un valor en la cajaBuscar
+        if (!cajaBuscar.getText().trim().isEmpty()) {
+            try {
+                // obtener el valor del No identificacion ingresado por el usuario 
+                buscar_identificacion = cajaBuscar.getText().trim(); // (.trim() quita los espacios antes y despues)
+                preparedStatement = conn.prepareStatement(query);
+                preparedStatement.setString(1, buscar_identificacion); // pasa el valor al parametro ? de la query
+                rs = preparedStatement.executeQuery();
+                // se establece un if para saber si es o no una identificación registrada
+                if (rs.next()) { // como el valor ha encontrar es Unique, el if es apropiado
+                    // obtener los valores que se encuentran en la db
+                    identificacion = String.valueOf(rs.getString("numero_identificacion"));
+                    nombre = String.valueOf(rs.getString("nombre"));
+                    email = String.valueOf(rs.getString("email"));
+                    direccion = String.valueOf(rs.getString("direccion"));
+                    celular = String.valueOf(rs.getString("celular"));
+                    fecha_ingreso = String.valueOf(rs.getDate("fecha_ingreso"));
+                    genero = rs.getString("genero");
+                    // obtener el valor del id para generar actualización
+                    cajaId.setText(String.valueOf(rs.getInt("idPersonal")));
+                    // teniendo el valor en las variables ahora los envio a las cajas
+                    cajaIdentificacion.setText(identificacion);
+                    cajaNombre.setText(nombre);
+                    cajaEmail.setText(email);
+                    cajaDireccion.setText(direccion);
+                    cajaCelular.setText(celular);
+                    cajaIngreso.setText(fecha_ingreso);
+                    comboGenero.setSelectedItem(genero); // el valor en la db debe ser igual que en el comboGenero (tener en cuenta las mayusculas y minusculas
+                    JOptionPane.showMessageDialog(null, "Consulta exitosa");
+                } else {
+                    JOptionPane.showMessageDialog(null, "No. Identificación no registrado");
+                    // si no está registrado el valor ingresado pasa a la cajaIdentificacion para que pueda realizar el registro
+                    limpiar();
+                    cajaIdentificacion.setText(buscar_identificacion);
+                }
+                conn.close();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Error al realizar la consulta");
+                System.err.println("Error al realizar consulta, " + ex);
             }
-            conn.close();
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error al realizar la consulta");
-            System.err.println("Error al realizar consulta, " + ex);
+        } else {
+            JOptionPane.showMessageDialog(null, "Ingresar No. Identificación para realizar consulta");
+            limpiar();
         }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
