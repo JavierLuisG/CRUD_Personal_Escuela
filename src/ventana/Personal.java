@@ -1,5 +1,6 @@
 package ventana;
 
+import com.mysql.cj.jdbc.exceptions.MysqlDataTruncation;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -219,7 +220,7 @@ public class Personal extends javax.swing.JFrame {
             conn.close();
         } catch (SQLException ex) {
             System.err.println("Error al eliminar, " + ex);
-        }        
+        }
     }//GEN-LAST:event_btnBorrarActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
@@ -230,12 +231,12 @@ public class Personal extends javax.swing.JFrame {
             preparedStatement = conn.prepareStatement(query);
             // obtener los valores de las cajas
             id = cajaId.getText();
-            identificacion = String.valueOf(cajaIdentificacion.getText());
-            nombre = String.valueOf(cajaNombre.getText());
-            email = String.valueOf(cajaEmail.getText());
-            direccion = String.valueOf(cajaDireccion.getText());
-            celular = String.valueOf(cajaCelular.getText());
-            fecha_ingreso = String.valueOf(cajaIngreso.getText());
+            identificacion = String.valueOf(cajaIdentificacion.getText().trim());
+            nombre = String.valueOf(cajaNombre.getText().trim());
+            email = String.valueOf(cajaEmail.getText().trim());
+            direccion = String.valueOf(cajaDireccion.getText().trim());
+            celular = String.valueOf(cajaCelular.getText().trim());
+            fecha_ingreso = String.valueOf(cajaIngreso.getText().trim());
             genero = String.valueOf(comboGenero.getSelectedItem());
             // pasar los valores al query correspondiente
             preparedStatement.setString(1, identificacion);
@@ -249,7 +250,7 @@ public class Personal extends javax.swing.JFrame {
             preparedStatement.setString(8, id);
             preparedStatement.executeUpdate();
             JOptionPane.showMessageDialog(null, "Actualización exitosa");
-            conn.close();            
+            conn.close();
         } catch (SQLException ex) {
             System.err.println("Error en actualización, " + ex);
         }
@@ -262,12 +263,12 @@ public class Personal extends javax.swing.JFrame {
         try {
             preparedStatement = conn.prepareStatement(query);
             // obtener los valores ingresados por el usuario en cada caja de texto
-            identificacion = cajaIdentificacion.getText();
-            nombre = cajaNombre.getText();
-            email = cajaEmail.getText();
-            direccion = cajaDireccion.getText();
-            celular = cajaCelular.getText();
-            fecha_ingreso = cajaIngreso.getText();
+            identificacion = cajaIdentificacion.getText().trim();
+            nombre = cajaNombre.getText().trim();
+            email = cajaEmail.getText().trim();
+            direccion = cajaDireccion.getText().trim();
+            celular = cajaCelular.getText().trim();
+            fecha_ingreso = cajaIngreso.getText().trim();
             genero = String.valueOf(comboGenero.getSelectedItem());
             // mandar los valores a la db
             preparedStatement.setString(1, identificacion);
@@ -281,7 +282,11 @@ public class Personal extends javax.swing.JFrame {
             // para que se ejecute la modificación
             preparedStatement.executeUpdate();
             JOptionPane.showMessageDialog(null, "Registro exitoso");
-            conn.close();
+            conn.close();            
+        } catch (SQLIntegrityConstraintViolationException ex) { // No. Identificación ya registrado
+            JOptionPane.showMessageDialog(null, "No Identificación ya registrado");
+        } catch (MysqlDataTruncation ex) { // si excede o hay errores en los campos solicitados
+            JOptionPane.showMessageDialog(null, "Ingrese correctamente los valores solicitados");
         } catch (SQLException ex) {
             System.err.println("Error en registrar, " + ex);
         }
@@ -359,7 +364,7 @@ public class Personal extends javax.swing.JFrame {
         cajaIngreso.setText("");
         comboGenero.setSelectedItem("");
     }
-    
+
     private static String validacionIngresoFecha(String fecha_ingreso) {
         // si el usuario no ingresa una fecha, por Default se pondra la fecha actual
         if (fecha_ingreso.isEmpty()) {
@@ -368,7 +373,7 @@ public class Personal extends javax.swing.JFrame {
             return fecha_ingreso;
         }
     }
-    
+
     private static String obtenerFechaActual() {
         // Método para obtener la fecha actual en formato "yyyy-MM-dd"
         LocalDate fechaActual = LocalDate.now();
