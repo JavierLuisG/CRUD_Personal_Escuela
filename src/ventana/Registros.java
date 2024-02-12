@@ -1,12 +1,18 @@
 package ventana;
 
-public class Registros extends javax.swing.JDialog {
+import javax.swing.table.DefaultTableModel;
 
+public class Registros extends javax.swing.JDialog {
+    
+    DefaultTableModel model = new DefaultTableModel();
+    
     public Registros(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(null);
         setTitle("Registros");
+        setResizable(false);
+        cargarModel();
     }
 
     @SuppressWarnings("unchecked")
@@ -16,7 +22,7 @@ public class Registros extends javax.swing.JDialog {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tableRegistro = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -25,18 +31,9 @@ public class Registros extends javax.swing.JDialog {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Personal Registrado");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        tableRegistro.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        tableRegistro.setModel(model);
+        jScrollPane1.setViewportView(tableRegistro);
 
         jButton1.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jButton1.setText("Regresar");
@@ -89,6 +86,13 @@ public class Registros extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void cargarModel() {
+        model.addColumn("Número Identificación");
+        model.addColumn("Nombre");
+        model.addColumn("Email");
+        model.addColumn("Celular");        
+    }
+    
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(() -> {
@@ -108,6 +112,6 @@ public class Registros extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tableRegistro;
     // End of variables declaration//GEN-END:variables
 }
