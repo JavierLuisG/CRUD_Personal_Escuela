@@ -200,12 +200,22 @@ public class Personal extends javax.swing.JFrame {
         menuRegistrados.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
         menuRegistrados.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/registros.png"))); // NOI18N
         menuRegistrados.setText("Personal registrado");
+        menuRegistrados.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuRegistradosActionPerformed(evt);
+            }
+        });
         jMenu1.add(menuRegistrados);
         jMenu1.add(jSeparator1);
 
         menuSalir.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
         menuSalir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/salir.png"))); // NOI18N
         menuSalir.setText("Salir");
+        menuSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuSalirActionPerformed(evt);
+            }
+        });
         jMenu1.add(menuSalir);
 
         jMenuBar1.add(jMenu1);
@@ -381,6 +391,16 @@ public class Personal extends javax.swing.JFrame {
             limpiar();
         }
     }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void menuSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSalirActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_menuSalirActionPerformed
+
+    private void menuRegistradosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuRegistradosActionPerformed
+        // true no permite realizar acciones en la ventana primaria
+        Registros registros = new Registros(this, true);
+        registros.setVisible(true);
+    }//GEN-LAST:event_menuRegistradosActionPerformed
 
     // metodo para la conexion a la db
     public Connection getConnection() {
