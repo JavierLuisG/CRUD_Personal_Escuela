@@ -1,11 +1,22 @@
 package ventana;
 
 import javax.swing.table.DefaultTableModel;
+import java.sql.*;
+import java.util.ArrayList;
 
 public class Registros extends javax.swing.JDialog {
-    
+
+    Connection conn;
+    PreparedStatement preparedStatement;
+    ResultSet rs;
+
+    String numeroIdentificacion;
+    String nombre;
+    String email;
+    String celular;
+
     DefaultTableModel model = new DefaultTableModel();
-    
+
     public Registros(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -13,6 +24,32 @@ public class Registros extends javax.swing.JDialog {
         setTitle("Registros");
         setResizable(false);
         cargarModel();
+    }
+
+    private void asignarFilaDatos() {
+        Personal personal = new Personal();
+        conn = personal.getConnection();
+        ArrayList<Object[]> persona = new ArrayList<>();
+
+        try {
+            preparedStatement = conn.prepareStatement("SELECT * FROM personal");
+            rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                numeroIdentificacion = String.valueOf(rs.getString("numero_identificacion"));
+                nombre = String.valueOf(rs.getString("nombre"));
+                email = String.valueOf(rs.getString("email"));
+                celular = String.valueOf(rs.getString("celular"));
+                Object[] fila = {numeroIdentificacion, nombre, email, celular};
+                persona.add(fila);
+                model.setRowCount(0);
+                for (Object[] objects : persona) {
+                    model.addRow(objects);
+                }
+            }
+            conn.close();
+        } catch (SQLException ex) {
+            System.err.println("Error, " + ex);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -90,9 +127,10 @@ public class Registros extends javax.swing.JDialog {
         model.addColumn("Número Identificación");
         model.addColumn("Nombre");
         model.addColumn("Email");
-        model.addColumn("Celular");        
+        model.addColumn("Celular");
+        asignarFilaDatos();
     }
-    
+
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(() -> {
