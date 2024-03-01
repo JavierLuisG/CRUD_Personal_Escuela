@@ -21,7 +21,7 @@ public class Personal extends javax.swing.JFrame {
     PreparedStatement preparedStatement;
     ResultSet rs;
 
-    String id;
+    int id;
     String buscar_identificacion;
     String identificacion;
     String nombre;
@@ -238,7 +238,7 @@ public class Personal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
-        limpiar();
+        toClean();
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
     private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
@@ -246,11 +246,11 @@ public class Personal extends javax.swing.JFrame {
         String query = "DELETE FROM personal WHERE idPersonal = ?";
         try {
             preparedStatement = conn.prepareStatement(query);
-            id = cajaId.getText();
-            preparedStatement.setString(1, id);
+            id = Integer.parseInt(cajaId.getText());
+            preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
             JOptionPane.showMessageDialog(null, "Registro eliminado");
-            limpiar();
+            toClean();
         } catch (SQLException ex) {
             System.err.println("Error al eliminar, " + ex);
         } finally {
@@ -264,15 +264,8 @@ public class Personal extends javax.swing.JFrame {
                 + "celular = ?,fecha_ingreso = ?,genero = ? WHERE idPersonal = ?";
         try {
             preparedStatement = conn.prepareStatement(query);
-            // obtener los valores de las cajas
-            id = cajaId.getText();
-            identificacion = String.valueOf(cajaIdentificacion.getText().trim());
-            nombre = String.valueOf(cajaNombre.getText().trim());
-            email = String.valueOf(cajaEmail.getText().trim());
-            direccion = String.valueOf(cajaDireccion.getText().trim());
-            celular = String.valueOf(cajaCelular.getText().trim());
-            fecha_ingreso = String.valueOf(cajaIngreso.getText().trim());
-            genero = String.valueOf(comboGenero.getSelectedItem());
+
+            validationEnteredData(); // obtener los valores de las cajas
             // identificar si las variables están vacias para no enviar datos vacios a la db
             if (!identificacion.isEmpty() && !nombre.isEmpty() && !email.isEmpty()
                     && !direccion.isEmpty() && !celular.isEmpty() && !genero.isEmpty()) {
@@ -285,7 +278,7 @@ public class Personal extends javax.swing.JFrame {
                 // @validacionIngresoFecha si el usuario no ingresa una fecha, por Default se pondra la fecha actual
                 preparedStatement.setString(6, validacionIngresoFecha(fecha_ingreso));
                 preparedStatement.setString(7, genero);
-                preparedStatement.setString(8, id);
+                preparedStatement.setInt(8, id);
                 preparedStatement.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Actualización exitosa");
             } else {
@@ -308,15 +301,8 @@ public class Personal extends javax.swing.JFrame {
                 + " value (?,?,?,?,?,?,?)";
         try {
             preparedStatement = conn.prepareStatement(query);
-            // obtener los valores ingresados por el usuario en cada caja de texto
-            identificacion = cajaIdentificacion.getText().trim();
-            nombre = cajaNombre.getText().trim();
-            email = cajaEmail.getText().trim();
-            direccion = cajaDireccion.getText().trim();
-            celular = cajaCelular.getText().trim();
-            fecha_ingreso = cajaIngreso.getText().trim();
-            genero = String.valueOf(comboGenero.getSelectedItem());
-            // identificar si las variables están vacias para no enviar datos vacios a ls db
+            validationEnteredData(); // obtener los valores de las cajas
+            // identificar si las variables están vacias para no enviar datos vacios a la db
             if (!identificacion.isEmpty() && !nombre.isEmpty() && !email.isEmpty()
                     && !direccion.isEmpty() && !celular.isEmpty() && !genero.isEmpty()) {
                 // mandar los valores a la db
@@ -358,16 +344,7 @@ public class Personal extends javax.swing.JFrame {
                 rs = preparedStatement.executeQuery();
                 // se establece un if para saber si es o no una identificación registrada
                 if (rs.next()) { // como el valor ha encontrar es Unique, el if es apropiado
-                    // obtener los valores que se encuentran en la db
-                    identificacion = String.valueOf(rs.getString("numero_identificacion"));
-                    nombre = String.valueOf(rs.getString("nombre"));
-                    email = String.valueOf(rs.getString("email"));
-                    direccion = String.valueOf(rs.getString("direccion"));
-                    celular = String.valueOf(rs.getString("celular"));
-                    fecha_ingreso = String.valueOf(rs.getDate("fecha_ingreso"));
-                    genero = rs.getString("genero");
-                    // obtener el valor del id para generar actualización
-                    cajaId.setText(String.valueOf(rs.getInt("idPersonal")));
+                    retrievePersonalData(rs);
                     // teniendo el valor en las variables ahora los envio a las cajas
                     cajaIdentificacion.setText(identificacion);
                     cajaNombre.setText(nombre);
@@ -380,7 +357,7 @@ public class Personal extends javax.swing.JFrame {
                 } else {
                     JOptionPane.showMessageDialog(null, "N° Identificación no registrado");
                     // si no está registrado el valor ingresado pasa a la cajaIdentificacion para que pueda realizar el registro
-                    limpiar();
+                    toClean();
                     cajaIdentificacion.setText(buscar_identificacion);
                 }
             } catch (SQLException ex) {
@@ -391,7 +368,7 @@ public class Personal extends javax.swing.JFrame {
             }
         } else {
             JOptionPane.showMessageDialog(null, "Ingresar N° Identificación para realizar consulta");
-            limpiar();
+            toClean();
         }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
@@ -420,7 +397,6 @@ public class Personal extends javax.swing.JFrame {
         if (rs != null) {
             try {
                 rs.close();
-                JOptionPane.showMessageDialog(null, "Se cerró el rs");
                 rs = null;
             } catch (SQLException ex) {
                 System.err.println("No se cerró el ResultSet");
@@ -429,7 +405,6 @@ public class Personal extends javax.swing.JFrame {
         if (preparedStatement != null) {
             try {
                 preparedStatement.close();
-                JOptionPane.showMessageDialog(null, "Se cerró el ps");
                 rs = null;
             } catch (SQLException ex) {
                 System.err.println("No se cerró el ResultSet");
@@ -438,14 +413,13 @@ public class Personal extends javax.swing.JFrame {
         if (conn != null) {
             try {
                 conn.close();
-                JOptionPane.showMessageDialog(null, "Se cerró la conexión");
             } catch (SQLException ex) {
                 System.err.println("No se pudo cerrar la conexión, " + ex);
             }
         }
     }
 
-    public void limpiar() {
+    public void toClean() {
         cajaBuscar.setText("");
         cajaId.setText("");
         cajaIdentificacion.setText("");
@@ -455,6 +429,34 @@ public class Personal extends javax.swing.JFrame {
         cajaCelular.setText("");
         cajaIngreso.setText("");
         comboGenero.setSelectedItem("");
+    }
+
+    public void retrievePersonalData(ResultSet rs) {
+        try {
+            // obtener los valores que se encuentran en la db
+            identificacion = String.valueOf(rs.getString("numero_identificacion"));
+            nombre = String.valueOf(rs.getString("nombre"));
+            email = String.valueOf(rs.getString("email"));
+            direccion = String.valueOf(rs.getString("direccion"));
+            celular = String.valueOf(rs.getString("celular"));
+            fecha_ingreso = String.valueOf(rs.getDate("fecha_ingreso"));
+            genero = rs.getString("genero");
+            cajaId.setText(String.valueOf(rs.getInt("idPersonal")));
+        } catch (SQLException ex) {
+            System.err.println("Error obteniendo los datos de la base de datos, " + ex);
+        }
+    }
+
+    public void validationEnteredData() {
+        // obtener los valores ingresados por el usuario en cada caja de texto
+        id = Integer.parseInt(cajaId.getText());
+        identificacion = cajaIdentificacion.getText().trim();
+        nombre = cajaNombre.getText().trim();
+        email = cajaEmail.getText().trim();
+        direccion = cajaDireccion.getText().trim();
+        celular = cajaCelular.getText().trim();
+        fecha_ingreso = cajaIngreso.getText().trim();
+        genero = String.valueOf(comboGenero.getSelectedItem());
     }
 
     private static String validacionIngresoFecha(String fecha_ingreso) {
