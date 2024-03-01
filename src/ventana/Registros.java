@@ -3,6 +3,7 @@ package ventana;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 public class Registros extends javax.swing.JDialog {
 
@@ -46,9 +47,35 @@ public class Registros extends javax.swing.JDialog {
                     model.addRow(objects);
                 }
             }
-            conn.close();
         } catch (SQLException ex) {
             System.err.println("Error, " + ex);
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                    JOptionPane.showMessageDialog(null, "Se cerró el rs");
+                    rs = null;
+                } catch (SQLException ex) {
+                    System.err.println("No se cerró el ResultSet");
+                }
+            }
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                    JOptionPane.showMessageDialog(null, "Se cerró el ps");
+                    rs = null;
+                } catch (SQLException ex) {
+                    System.err.println("No se cerró el ResultSet");
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                    JOptionPane.showMessageDialog(null, "Se cerró la conexión");
+                } catch (SQLException ex) {
+                    System.err.println("No se pudo cerrar la conexión, " + ex);
+                }
+            }
         }
     }
 
