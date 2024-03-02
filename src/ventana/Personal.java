@@ -33,6 +33,8 @@ public class Personal extends javax.swing.JFrame {
     // generar los valores del JComboBox
     String[] generoArray = {"", "Masculino", "Femenino"};
     DefaultComboBoxModel model = new DefaultComboBoxModel(generoArray);
+    
+    boolean isSelectId = false; // Para verificar si se ha seleccionado un N° identificación para poder eliminar el registro
 
     public Personal() {
         initComponents();
@@ -244,17 +246,20 @@ public class Personal extends javax.swing.JFrame {
     private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
         conn = getConnection();
         String query = "DELETE FROM personal WHERE idPersonal = ?";
-        try {
-            preparedStatement = conn.prepareStatement(query);
-            id = Integer.parseInt(cajaId.getText());
-            preparedStatement.setInt(1, id);
-            preparedStatement.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Registro eliminado");
-            toClean();
-        } catch (SQLException ex) {
-            System.err.println("Error al eliminar, " + ex);
-        } finally {
-            closeConnection();
+        if (isSelectId) {
+            try {
+                preparedStatement = conn.prepareStatement(query);
+                preparedStatement.setInt(1, id);
+                preparedStatement.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Registro eliminado");
+                toClean();
+            } catch (SQLException ex) {
+                System.err.println("Error al eliminar, " + ex);
+            } finally {
+                closeConnection();
+            }            
+        } else {
+            JOptionPane.showMessageDialog(null, "Para eliminar un registro seleccione primero un N° identificación");
         }
     }//GEN-LAST:event_btnBorrarActionPerformed
 
@@ -285,7 +290,8 @@ public class Personal extends javax.swing.JFrame {
                     cajaDireccion.setText(direccion);
                     cajaCelular.setText(celular);
                     cajaIngreso.setText(fechaIngreso);
-                    comboGenero.setSelectedItem(genero);                    
+                    comboGenero.setSelectedItem(genero); 
+                    isSelectId = true;
                 } catch (MysqlDataTruncation ex) { // si excede o hay errores en los campos solicitados
                     JOptionPane.showMessageDialog(null, "Ingrese correctamente los valores solicitados");
                 } catch (SQLIntegrityConstraintViolationException ex) {
@@ -368,6 +374,7 @@ public class Personal extends javax.swing.JFrame {
                     toClean();
                     cajaIdentificacion.setText(buscarIdentificacion);
                 }
+                isSelectId = true;
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Error al realizar la consulta");
                 System.err.println("Error al realizar consulta, " + ex);
@@ -437,6 +444,7 @@ public class Personal extends javax.swing.JFrame {
         cajaCelular.setText("");
         cajaIngreso.setText("");
         comboGenero.setSelectedItem("");
+        isSelectId = false;
     }
 
     public void retrievePersonalData(ResultSet rs) {
