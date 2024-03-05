@@ -1,4 +1,4 @@
-![Estado del Proyecto](https://img.shields.io/badge/Proyecto%20en%20curso-Brightgreen)
+![Estado del Proyecto](https://img.shields.io/badge/Proyecto%20terminado-dodgerblue)
 
 ## Proyecto Java con JFrames - Aplicación de CRUD
 
@@ -14,6 +14,7 @@ La aplicación proporciona una interfaz gráfica intuitiva para que los usuarios
 
 ### Tecnologías Utilizadas
 - Java: Lenguaje de programación principal utilizado en el desarrollo del proyecto.
+- NetBeans: Entorno de desarrollo integrado (IDE) utilizado para la creación del proyecto.
 - MySQL: Sistema de gestión de bases de datos relacional utilizado para almacenar datos.
 - MySQL Workbench: Herramienta utilizada para el diseño y administración de la base de datos MySQL.
 
@@ -27,9 +28,9 @@ Para ejecutar este proyecto, sigue estos pasos:
 6. Instala y configura MySQL Workbench, una herramienta de diseño de bases de datos y administración para MySQL. Puedes descargar MySQL Workbench desde [aquí](https://dev.mysql.com/downloads/workbench/).
 
 ### Uso
-1. Ejecuta la aplicación desde tu IDE preferido.
-2. Ejecuta MySQL Workbench donde podras gestionar la base de datos. Ejecuta los comandos que se encuentran en el archivo escuela.sql
+1. Ejecuta la aplicación desde tu IDE, preferiblemente NetBeans.
+2. Ejecuta MySQL Workbench para gestionar los datos y crear la base de datos. Ejecuta los comandos que se encuentran en el archivo escuela.sql
 3. Ejecuta la aplicación y utiliza los botones correspondientes para realizar las operaciones CRUD.
 
 ### Créditos
-Este proyecto fue desarrollado siguiendo ejercicios y tutoriales por Alejandro Miguel Taboada Sanchez.
+Este proyecto fue desarrollado gracias a los conocimientos adquiridos por el curso 'Aprende Programación en Java (de Basico a Avanzado)' por Alejandro Miguel Taboada Sanchez.
